@@ -1,0 +1,33 @@
+---
+# tasks file for nginx_role
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Start and enable nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Deploy Nginx conf
+  template:
+   src: nginxgogs.j2
+   dest: /etc/nginx/sites-available/gogs
+  notify: Restart Nginx
+
+- name: Check if symlink exists
+  stat:
+    path: /etc/nginx/sites-enabled/gogs
+  register: gogs_symlink
+
+- name: Create SymLink if not exists
+  command: ln -s /etc/nginx/sites-available/gogs /etc/nginx/sites-enabled/
+  when: not gogs_symlink.stat.exists
+
+
+- name: Restart again
+  service:
+   name: nginx
+   state: restarted

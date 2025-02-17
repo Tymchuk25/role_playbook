@@ -1,0 +1,12 @@
+ - name: Setting DB
+   hosts: db
+   become: yes
+   roles:
+    - db_role
+
+ - name: Setting App &  Nginx
+   hosts: app
+   become: yes
+   roles:
+    - app_role
+    - nginx_role

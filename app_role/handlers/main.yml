@@ -1,0 +1,6 @@
+---
+# handlers file for app_role
+- name: Restart Gogs
+  service:
+   name: gogs
+   state: restarted

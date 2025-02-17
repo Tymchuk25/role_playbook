@@ -1,0 +1,56 @@
+---
+- name: Deploy Gogs with DB
+  hosts: db
+  become: yes
+
+  vars: 
+   mysql_bind_address: "192.168.56.115"
+   mysql_user_name: "gogs_user"
+   mysql_user_password: "gogs_password" 
+   mysql_db_name: "gogs"
+
+  tasks:
+    - name: Install MySQL and dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - mysql-server
+        - mysql-client
+        - python3-mysqldb
+
+    - name: Allow external MySQL connections
+      lineinfile:
+       path: /etc/mysql/mysql.conf.d/mysqld.cnf
+       regexp: "^bind-address"
+       line: "bind-address = {{ mysql_bind_address }}"
+       state: present
+      notify: Restart MySQL
+
+
+    - name: Start and enable MySQL
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Create database for Gogs
+      mysql_db:
+        name: "{{ mysql_db_name }}"
+        state: present
+
+    - name: Create MySQL user for Gogs
+      mysql_user:
+        name: " {{ mysql_user_name }} "
+        password: " {{ mysql_user_password }} "
+        priv: "gogs_user.*:ALL"
+        host: '%'
+        state: present
+
+  handlers: 
+   - name: Restart MySQL
+     service:
+      name: mysql
+      state: restarted
+

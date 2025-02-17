@@ -1,0 +1,13 @@
+---
+# vars file for app_role
+vagrant_dest: /home/vagrant
+run_user : vagrant
+db_type: mysql
+db_host: 192.168.56.115:3306
+db_name: gogs
+db_user: gogs
+db_password: gogs
+db_path: /home/vagrant/gogs/data/gogs.db
+gogs_user: vagrant
+gogs_directory: /home/vagrant/gogs
+

@@ -1,0 +1,118 @@
+---
+- name: Deploy Gogs with DB
+  hosts: db
+  become: yes
+
+  tasks:
+    - name: Install MySQL and dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - mysql-server
+        - mysql-client
+        - python3-mysqldb
+
+    - name: Allow external MySQL connections
+      lineinfile:
+       path: /etc/mysql/mysql.conf.d/mysqld.cnf
+       regexp: '^bind-address'
+       line: 'bind-address = 0.0.0.0'
+       state: present
+
+    - name: Restart MySQL to apply changes
+      service:
+       name: mysql
+       state: restarted
+
+
+    - name: Start and enable MySQL
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Create database for Gogs
+      mysql_db:
+        name: gogs
+        state: present
+
+    - name: Create MySQL user for Gogs
+      mysql_user:
+        name: gogs_user
+        password: "gogs_password"
+        priv: "gogs.*:ALL"
+        host: '%'
+        state: present
+
+- name: Install and Configure Gogs
+  hosts: app
+  become: yes
+
+  tasks:
+
+    - name: Update cache OS
+      apt:
+       update_cache: yes
+
+    - name: Install dependencies
+      apt:
+        name:
+          - git
+          - zip
+          - unzip
+        state: latest
+
+    - name: Ensure unzip is installed
+      apt:
+       name: unzip
+       state: latest
+       update_cache: yes
+    
+    - name: Dowload Gogs
+      get_url:
+       url: https://dl.gogs.io/0.12.11/gogs_0.12.11_linux_amd64.zip
+       dest: /home/vagrant
+
+    - name: Extract Gogs
+      unarchive:
+       src: /home/vagrant/gogs_0.12.11_linux_amd64.zip
+       dest: /home/vagrant
+       remote_src: no
+
+    - name: Ensure Gogs directory exists
+      file:
+        path: /home/vagrant/gogs
+        state: directory
+        owner: vagrant
+        group: vagrant
+
+    - name: Create dir for Conf
+      shell: |
+       mkdir /home/vagrant/gogs/custom
+       mkdir /home/vagrant/gogs/custom/conf
+       touch /home/vagrant/gogs/custom/conf/app.ini
+
+
+    - name: Create configuration file for Gogs
+      copy:
+        content: |
+          [database]
+          DB_TYPE = mysql
+          HOST = {{ hostvars['linux2']['ansible_default_ipv4']['address'] }}:3306
+          NAME = gogs
+          USER = gogs_user
+          PASSWD = gogs_password
+
+          [server]
+          PROTOCOL = http
+          HTTP_ADDR = 0.0.0.0
+          HTTP_PORT = 3000
+        dest: /home/vagrant/gogs/custom/conf/app.ini
+
+    - name: Start Gogs
+      shell: |
+        cd /home/vagrant/gogs
+        ./gogs web
+

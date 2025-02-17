@@ -1,0 +1,49 @@
+BRAND_NAME = Gogs
+RUN_USER   = vagrant
+RUN_MODE   = "{{ run_user }}"
+
+[database]
+TYPE     = "{{ db_type }}"
+HOST     = "{{ db_host }}"
+NAME     = "{{ db_name }}"
+USER     = "{{ db_user }}"
+PASSWORD = "{{ db_password }}"
+SSL_MODE = disable
+PATH     = "{{ db_path }}"
+
+[repository]
+ROOT = /home/vagrant/gogs-repositories
+
+[server]
+DOMAIN           = localhost
+PROTOCOL         = http
+HTTP_ADDR        = 0.0.0.0
+HTTP_PORT        = 3000
+EXTERNAL_URL     = http://192.168.56.114/
+DISABLE_SSH      = false
+SSH_PORT         = 22
+START_SSH_SERVER = false
+OFFLINE_MODE     = false
+
+[mailer]
+ENABLED = false
+
+[service]
+REGISTER_EMAIL_CONFIRM = false
+ENABLE_NOTIFY_MAIL     = false
+DISABLE_REGISTRATION   = false
+ENABLE_CAPTCHA         = true
+REQUIRE_SIGNIN_VIEW    = false
+
+[picture]
+DISABLE_GRAVATAR        = false
+ENABLE_FEDERATED_AVATAR = false
+
+[session]
+PROVIDER = file
+
+[log]
+MODE      = file
+LEVEL     = Info
+ROOT_PATH = /home/vagrant/gogs/log
+

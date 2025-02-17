@@ -1,0 +1,78 @@
+---
+- name: Install and Configure Gogs
+  hosts: app
+  become: yes
+  gather_facts: yes
+  vars:
+   gogs_url: "https://dl.gogs.io/0.12.11/gogs_0.12.11_linux_amd64.zip"
+   gogs_dest: "/home/vagrant"
+   gogs_user: "vagrant"
+
+
+  tasks:
+
+    - name: Update cache OS
+      apt:
+       update_cache: yes
+
+    - name: Install dependencies
+      apt:
+        name:
+          - git
+          - zip
+          - unzip
+        state: latest
+
+    - name: Ensure unzip is installed
+      apt:
+       name: unzip
+       state: latest
+       update_cache: yes
+    
+    - name: Dowload Gogs
+      get_url:
+       url: "{{ gogs_url }}"
+       dest: "{{ gogs_dest }}/"
+
+    - name: Extract Gogs
+      unarchive:
+       src: "{{gogs_dest}}/gogs_0.12.11_linux_amd64.zip"
+       dest: /home/vagrant/
+       mode: '0755'
+       remote_src: yes
+
+    - name: Ensure Gogs directory exists
+      file:
+        path: /home/vagrant/gogs
+        state: directory
+        owner: "{{ gogs_user }}"
+        group: vagrant
+
+    - name: Create dir for Conf
+      shell: |
+       mkdir /home/vagrant/gogs/custom
+       mkdir /home/vagrant/gogs/custom/conf
+       touch /home/vagrant/gogs/custom/conf/app.ini
+
+
+    - name: Create configuration file for Gogs
+      copy:
+        content: |
+          [database]
+          DB_TYPE = mysql
+          HOST = 192.168.56.115:3306
+          NAME = gogs
+          USER = gogs_user
+          PASSWD = gogs_password
+
+          [server]
+          PROTOCOL = http
+          HTTP_ADDR = 0.0.0.0
+          HTTP_PORT = 3000
+        dest: /home/vagrant/gogs/custom/conf/app.ini
+
+    - name: Start Gogs
+      shell: |
+        cd /home/vagrant/gogs
+        ./gogs web
+

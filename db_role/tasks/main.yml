@@ -1,0 +1,39 @@
+---
+# tasks file for db_role
+- name: Install DB MYSQL
+  apt:
+   name: "{{ item }}"
+   state: present
+   update_cache: yes
+  loop:
+   - mysql-server
+   - mysql-client
+   - python3-mysqldb
+
+- name: Allow connection from App 
+  lineinfile:
+   path: /etc/mysql/mysql.conf.d/mysqld.cnf
+   regexp: '^bind-address'
+   line: 'bind-address = 192.168.56.115'
+   state: present
+  notify: Restart MYSQL
+
+- name: Start and enable MYSQL
+  service:
+   name: mysql
+   state: started
+   enabled: yes
+
+- name: Create db for app
+  mysql_db:
+   name: "{{ mysql_db_name }}"
+   state: present
+
+- name: Create MYSQL user
+  mysql_user:
+   name: "{{ mysql_user_name }}"
+   password: "{{ mysql_user_password }}"
+   priv: "{{ mysql_db_name }}.*:ALL"
+   host: '%'
+   state: present
+

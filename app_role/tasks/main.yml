@@ -1,0 +1,71 @@
+---
+# tasks file for app_role
+
+- name: Update cache OS
+  apt:
+   update_cache: yes
+
+- name: Install dependencies
+  apt:
+    name:
+     - git
+     - zip
+     - unzip
+    state: latest
+
+- name: Dowload Gogs
+  get_url:
+    url: https://dl.gogs.io/0.12.11/gogs_0.12.11_linux_amd64.zip
+    dest: "{{ vagrant_dest }}"
+
+- name: Extract Gogs
+  unarchive:
+   src: /home/vagrant/gogs_0.12.11_linux_amd64.zip
+   dest:  "{{ vagrant_dest }}"
+   remote_src: yes
+
+- name: Ensure Gogs directory exists
+  file:
+   path: /home/vagrant/gogs
+   state: directory
+   owner: vagrant
+   group: vagrant
+
+- name: Create dir for Conf
+  file:
+   path: /home/vagrant/gogs/custom/conf
+   state: directory
+   owner: vagrant
+   group: vagrant
+   mode: '0755'
+
+- name: Create app.ini file
+  file:
+    path: /home/vagrant/gogs/custom/conf/app.ini
+    state: touch
+    owner: vagrant
+    group: vagrant
+    mode: '0644'
+
+- name: Configure App.ini file
+  template:
+   src: gogs_config.j2
+   dest: "{{ vagrant_dest }}/gogs/custom/conf/app.ini"
+#  notify: Restart Gogs
+
+- name: Create systemd-service for Gogs
+  template:
+   src: gogs_service.j2
+   dest: /etc/systemd/system/gogs.service
+   mode: '0777'
+
+- name: Reload systemd
+  command: sudo systemctl daemon-reload
+
+- name: Active Gogs as service
+  systemd:
+    name: gogs
+    enabled: yes
+    state: started
+  notify: Restart Gogs
+ 

@@ -1,0 +1,3 @@
+db_user: gogs
+db_pass: gogs
+db_name: gogs

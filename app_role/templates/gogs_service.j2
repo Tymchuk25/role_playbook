@@ -1,0 +1,13 @@
+[Unit]
+Description=Gogs Git Service
+After=network.target
+
+[Service]
+ExecStart={{ gogs_directory }}/gogs web
+User={{ gogs_user }}
+Restart=always
+WorkingDirectory={{ gogs_directory }}
+
+[Install]
+WantedBy=multi-user.target
+
