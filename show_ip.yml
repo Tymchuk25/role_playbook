@@ -1,0 +1,8 @@
+- name: Вивести IP-адреси всіх хостів
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Показати IP-адресу інтерфейсу enp0s8
+      debug:
+        msg: "{{ ansible_enp0s8.ipv4.address }}"
+

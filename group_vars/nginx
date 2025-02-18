@@ -2,6 +2,3 @@
 ansible_user            : vagrant
 ansible_ssh_private_key : ~/vagrant/.ssh/id_rsa
 
-db_user: gogs
-db_pass: gogs
-db_name: gogs

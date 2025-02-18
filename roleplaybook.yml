@@ -4,9 +4,14 @@
    roles:
     - db_role
 
- - name: Setting App &  Nginx
+ - name: Setting App
    hosts: app
    become: yes
    roles:
     - app_role
+
+ - name : Setting Nginx
+   hosts: nginx
+   become: yes
+   roles: 
     - nginx_role

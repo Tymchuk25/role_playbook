@@ -1,3 +1,5 @@
 ---
 # vars file for nginx_role
-gogs_ip: 192.168.56.114
+gogs_app2_ip: 192.168.56.113
+gogs_app1_ip: 192.168.56.114
+
