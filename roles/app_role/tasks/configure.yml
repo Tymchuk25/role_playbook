@@ -1,0 +1,14 @@
+---
+- name: Ensure custom config directory exist
+  file:
+   path: "{{ vagrant_dest }}/gogs/custom/conf"
+   state: directory
+   owner: vagrant
+   group: vagrant
+   mode: '0755'
+
+- name: Configure App.ini file
+  template:
+   src: gogs_config.j2
+   dest: "{{ vagrant_dest }}/gogs/custom/conf/app.ini"
+

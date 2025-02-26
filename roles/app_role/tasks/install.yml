@@ -1,0 +1,9 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+     - git
+     - zip
+     - unzip
+    state: latest
+

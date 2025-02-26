@@ -1,0 +1,7 @@
+---
+# tasks file for app_role
+- import_tasks: install.yml
+- import_tasks: setup_gogs.yml
+- import_tasks: configure.yml
+- import_tasks: service.yml
+  

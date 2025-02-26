@@ -1,12 +1,21 @@
- - name: Setting DB
+- name : Update cache on all machine
+   hosts: all
+   become : yes
+   remote_user: vagrant
+   roles : 
+    - common_role
+
+- name: Setting DB
    hosts: db
    become: yes
+   remote_user: vagrant
    roles:
     - db_role
 
  - name: Setting App
    hosts: app
    become: yes
+   remote_user: vagrant
    roles:
     - app_role
 
@@ -14,5 +23,6 @@
 # - name : Setting Nginx
 #   hosts: nginx
 #   become: yes
+#   remote_user: vagrant
 #   roles: 
 #    - nginx_role

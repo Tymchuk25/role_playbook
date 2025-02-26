@@ -1,0 +1,7 @@
+---
+# defaults file for nginx_role
+
+nginx_conf_dir: "/etc/nginx/sites-available"
+nginx_enabled_dir : "/etc/nginx/sites-enabled"
+nginx_site_name: "gogs"
+nginx_conf_template: "nginxgogs.j2"

@@ -1,0 +1,7 @@
+---
+- name: Deploy Nginx conf
+  template:
+   src: "{{ nginx_conf_template }}"
+   dest: "{{ nginx_conf_dir }}/{{ nginx_site_name }}"
+  notify: Restart Nginx
+

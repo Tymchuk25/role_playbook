@@ -1,0 +1,14 @@
+---
+- name: Check if symlink exists
+  stat:
+    path: /etc/nginx/sites-enabled/gogs
+  register: gogs_symlink
+
+- name: Create Symlink if not exists
+  file:
+    src: /etc/nginx/sites-available/gogs
+    dest: /etc/nginx/sites-enabled/gogs
+    state: link
+  when: not gogs_symlink.stat.exists
+  notify: Restart Nginx
+

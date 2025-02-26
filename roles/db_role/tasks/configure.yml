@@ -1,0 +1,9 @@
+---
+- name: Allow connection from App
+  lineinfile:
+   path: /etc/mysql/mysql.conf.d/mysqld.cnf
+   regexp: '^bind-address'
+   line: 'bind-address = 192.168.56.115'
+   state: present
+  notify: Restart MYSQL
+

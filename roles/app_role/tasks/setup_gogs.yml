@@ -1,0 +1,13 @@
+---
+- name: Copy Gogs from Ansible Controller
+  copy:
+   src: /tmp/gogs.zip
+   dest:  "{{ vagrant_dest }}/gogs.zip"
+   mode: '0644'
+
+- name: Extract Gogs
+  unarchive:
+   src:  "{{ vagrant_dest }}/gogs.zip"
+   dest:  "{{ vagrant_dest }}/"
+   remote_src: yes
+
