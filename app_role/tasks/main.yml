@@ -13,23 +13,32 @@
      - unzip
     state: latest
 
-- name: Dowload Gogs
-  get_url:
-    url: https://dl.gogs.io/0.12.11/gogs_0.12.11_linux_amd64.zip
-    dest: "{{ vagrant_dest }}"
+- name: Transfer Gogs archive from Ansible Controller to linux1
+  copy:
+    src: /tmp/gogs.zip
+    dest: /tmp/gogs.zip
+    mode: '0644'
+
+- name: Copy Gogs from MasterNode
+  copy:
+   src: /tmp/gogs.zip
+   dest:  "{{ vagrant_dest }}/"
+   mode: '0644'
+   remote_src : yes
 
 - name: Extract Gogs
   unarchive:
-   src: /home/vagrant/gogs_0.12.11_linux_amd64.zip
-   dest:  "{{ vagrant_dest }}"
+   src:  "{{ vagrant_dest }}/gogs.zip"
+   dest:  "{{ vagrant_dest }}/"
    remote_src: yes
 
 - name: Ensure Gogs directory exists
   file:
-   path: /home/vagrant/gogs
-   state: directory
-   owner: vagrant
-   group: vagrant
+    path: /home/vagrant/gogs
+    state: directory
+    owner: vagrant
+    group: vagrant
+    recurse: yes
 
 - name: Create dir for Conf
   file:
@@ -51,13 +60,12 @@
   template:
    src: gogs_config.j2
    dest: "{{ vagrant_dest }}/gogs/custom/conf/app.ini"
-#  notify: Restart Gogs
 
 - name: Create systemd-service for Gogs
   template:
    src: gogs_service.j2
    dest: /etc/systemd/system/gogs.service
-   mode: '0777'
+   mode: '0644'
 
 - name: Reload systemd
   command: sudo systemctl daemon-reload
@@ -66,6 +74,7 @@
   systemd:
     name: gogs
     enabled: yes
-    state: started
+    state: restarted
   notify: Restart Gogs
- 
+
+  
